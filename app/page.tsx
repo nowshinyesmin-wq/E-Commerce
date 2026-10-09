@@ -150,7 +150,9 @@ export default function Home() {
   } = useFilterStore();
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'customer' | 'admin'>('customer');
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
@@ -273,6 +275,7 @@ export default function Home() {
       quantity: 1,
       image: variant.image,
     });
+    setIsCartOpen(true);
   };
 
   const hasActiveFilters =
@@ -383,7 +386,14 @@ export default function Home() {
   }, [quickViewProduct]);
 
   return (
-    <main className="min-h-screen px-4 py-6 text-[#1b120d] md:px-8">
+    <main id="main-content" className="min-h-screen px-4 py-6 text-[#1b120d] md:px-8">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-[#1b120d] focus:px-4 focus:py-2 focus:text-sm focus:text-white"
+      >
+        Skip to content
+      </a>
+
       <AnimatePresence>
         {isSearchOpen && (
           <motion.div
@@ -837,6 +847,180 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {isCartOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-[#1b120d]/35 backdrop-blur-sm"
+            onClick={() => setIsCartOpen(false)}
+          >
+            <motion.aside
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', stiffness: 260, damping: 28 }}
+              onClick={(event) => event.stopPropagation()}
+              className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-[#fffaf6] p-5 shadow-[0_30px_80px_rgba(27,18,13,0.25)]"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-[0.65rem] uppercase tracking-[0.22rem] text-[#7d6258]">Your bag</p>
+                  <h2 className="text-2xl font-semibold text-[#1b120d]">Cart</h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsCartOpen(false)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f5e7df] text-[#1b120d]"
+                  aria-label="Close shopping cart"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="mt-5 rounded-[24px] bg-[#1b120d] p-4 text-[#f8f1eb]">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[0.64rem] uppercase tracking-[0.18rem] text-[#d8c2b9]">Shipping progress</p>
+                    <p className="mt-1 text-2xl font-semibold">{formatCurrency(subtotal, currency)}</p>
+                  </div>
+                  <div className="rounded-full bg-[#f6e4d9] p-2 text-[#1b120d]">
+                    <Truck className="h-4 w-4" />
+                  </div>
+                </div>
+
+                <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/15">
+                  <div
+                    className="h-full rounded-full bg-[#efbf9d] transition-all duration-300"
+                    style={{ width: `${shippingProgress}%` }}
+                  />
+                </div>
+                <p className="mt-3 text-xs text-[#f0d9cc]">
+                  {subtotal >= freeShippingThreshold
+                    ? 'Free shipping unlocked'
+                    : `${formatCurrency(remainingForFreeShipping, currency)} left for free shipping`}
+                </p>
+              </div>
+
+              {cartItems.length === 0 ? (
+                <div className="mt-6 flex flex-1 flex-col items-center justify-center rounded-[28px] border border-dashed border-[#e7d1c3] bg-[#fffaf7] p-6 text-center">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#f5e7df] text-[#1b120d]">
+                    <ShoppingBag className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-[#1b120d]">Your bag is empty</h3>
+                  <p className="mt-2 max-w-xs text-sm text-[#5d443d]">
+                    Add a few essentials and we’ll keep your shipping progress visible right here.
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-6 flex-1 space-y-3 overflow-y-auto pr-1">
+                  {cartItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className="rounded-[22px] border border-[#ebd5c8] bg-white p-3 shadow-[0_12px_22px_rgba(33,24,19,0.04)]"
+                    >
+                      <div className="flex gap-3">
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          width={90}
+                          height={110}
+                          className="h-24 w-24 rounded-[18px] object-cover"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <p className="truncate font-medium text-[#1b120d]">{item.name}</p>
+                              <p className="mt-1 text-xs text-[#6a5148]">
+                                {item.color} • {item.size}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeItem(item.id)}
+                              className="text-xs font-medium text-[#8d5a47]"
+                            >
+                              Remove
+                            </button>
+                          </div>
+
+                          <div className="mt-3 flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 rounded-full bg-[#f5e7df] px-2 py-1.5">
+                              <button
+                                type="button"
+                                onClick={() => updateQuantity(item.id, -1)}
+                                className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm text-[#1b120d]"
+                                aria-label={`Decrease quantity for ${item.name}`}
+                              >
+                                −
+                              </button>
+                              <span className="min-w-4 text-center text-sm font-medium text-[#1b120d]">{item.quantity}</span>
+                              <button
+                                type="button"
+                                onClick={() => updateQuantity(item.id, 1)}
+                                className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm text-[#1b120d]"
+                                aria-label={`Increase quantity for ${item.name}`}
+                              >
+                                +
+                              </button>
+                            </div>
+                            <span className="text-sm font-semibold text-[#1b120d]">
+                              {formatCurrency(item.price * item.quantity, currency)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="mt-6 rounded-[24px] border border-[#ead7c9] bg-[#fffaf7] p-4">
+                <div className="space-y-3 text-sm text-[#4a3730]">
+                  <div className="flex items-center justify-between">
+                    <span>Subtotal</span>
+                    <span className="font-medium text-[#1b120d]">{formatCurrency(subtotal, currency)}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Shipping</span>
+                    <span className="font-medium text-[#1b120d]">
+                      {subtotal >= freeShippingThreshold ? 'Free' : formatCurrency(5, currency)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Estimated tax</span>
+                    <span className="font-medium text-[#1b120d]">{formatCurrency(subtotal * 0.08, currency)}</span>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex items-center justify-between border-t border-[#ead7c9] pt-3 text-base font-semibold text-[#1b120d]">
+                  <span>Total</span>
+                  <span>{formatCurrency(subtotal + (subtotal >= freeShippingThreshold ? 0 : 5) + subtotal * 0.08, currency)}</span>
+                </div>
+
+                {promoCodes.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    {promoCodes.map((code) => (
+                      <div key={code} className="flex items-center justify-between rounded-full bg-[#f5e7df] px-3 py-2 text-xs text-[#4a3730]">
+                        <span>{code}</span>
+                        <button type="button" onClick={() => removePromo(code)} className="text-[#a76446]">
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <Button className="mt-5 w-full rounded-full bg-[#1b120d] text-white hover:bg-[#31241d]">
+                Proceed to checkout
+              </Button>
+            </motion.aside>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="mx-auto max-w-7xl">
         <header className="glass-panel sticky top-4 z-30 flex items-center justify-between gap-4 rounded-full px-4 py-3 md:px-6">
           <div className="flex items-center gap-3">
@@ -875,8 +1059,27 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <div className="flex items-center rounded-full border border-[#ead7c9] bg-[#fffaf6]/80 p-1">
+              {(['customer', 'admin'] as const).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setViewMode(mode)}
+                  className={cn(
+                    'rounded-full px-3 py-2 text-xs font-medium uppercase tracking-[0.18rem] transition-colors',
+                    viewMode === mode
+                      ? 'bg-[#1b120d] text-white'
+                      : 'text-[#5d443d] hover:bg-[#f5e7df]',
+                  )}
+                  aria-pressed={viewMode === mode}
+                >
+                  {mode === 'customer' ? 'Customer portal' : 'Admin dashboard'}
+                </button>
+              ))}
+            </div>
+
             <Select value={currency} onValueChange={(value) => setCurrency(value as typeof currency)}>
-              <SelectTrigger className="w-[118px] bg-white/60">
+              <SelectTrigger className="w-[118px] bg-white/60" aria-label="Select currency">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent>
@@ -890,12 +1093,169 @@ export default function Home() {
             <Button variant="ghost" size="icon" aria-label="Search products" onClick={() => setIsSearchOpen(true)}>
               <Search className="h-5 w-5" />
             </Button>
-            <Button variant="secondary" className="gap-2 rounded-full" aria-label="Open shopping bag">
+            <Button
+              variant="secondary"
+              className="gap-2 rounded-full"
+              aria-label="Open shopping bag"
+              onClick={() => setIsCartOpen(true)}
+            >
               <ShoppingBag className="h-4 w-4" />
               <span>{cartItems.reduce((sum, item) => sum + item.quantity, 0)}</span>
             </Button>
           </div>
         </header>
+
+        {viewMode === 'admin' && (
+          <section className="mt-8 glass-panel rounded-[32px] p-5 md:p-6" aria-label="Admin dashboard overview">
+            <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="text-[0.68rem] uppercase tracking-[0.24rem] text-[#7d6258]">Operations</p>
+                <h2 className="mt-1 text-3xl font-semibold text-[#1b120d]">Admin dashboard</h2>
+              </div>
+              <span className="inline-flex items-center rounded-full bg-[#edf7f0] px-3 py-1 text-xs font-medium text-[#2d6b47]">
+                Live + 12% vs last week
+              </span>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {[
+                { label: 'Revenue', value: '$182.4K', change: '+18.2%' },
+                { label: 'Average CV', value: '$1,240', change: '+6.4%' },
+                { label: 'Conversion rate', value: '4.6%', change: '+0.6%' },
+                { label: 'Stock velocity', value: '92%', change: '+11%' },
+              ].map((metric) => (
+                <div key={metric.label} className="rounded-[24px] border border-[#ebd5c8] bg-[#fffaf7] p-4">
+                  <p className="text-[0.65rem] uppercase tracking-[0.22rem] text-[#7d6258]">{metric.label}</p>
+                  <div className="mt-3 flex items-end justify-between gap-3">
+                    <p className="text-3xl font-semibold text-[#1b120d]">{metric.value}</p>
+                    <span className="rounded-full bg-[#edf7f0] px-2 py-1 text-[0.62rem] font-medium text-[#2d6b47]">
+                      {metric.change}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-5 grid gap-5 xl:grid-cols-[1.4fr_0.8fr]">
+              <div className="rounded-[28px] border border-[#ebd5c8] bg-[#fffaf7] p-4">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-xl font-semibold text-[#1b120d]">Revenue trend</h3>
+                  <span className="text-sm text-[#5d443d]">Last 7 days</span>
+                </div>
+                <div className="flex h-40 items-end gap-3">
+                  {[42, 58, 46, 72, 88, 74, 95].map((value, index) => (
+                    <div key={index} className="flex flex-1 flex-col items-center gap-2">
+                      <div
+                        className="w-full rounded-t-[16px] bg-gradient-to-t from-[#a76446] to-[#efbf9d]"
+                        style={{ height: `${value}%` }}
+                        aria-label={`Revenue bar ${index + 1}`}
+                      />
+                      <span className="text-[0.62rem] uppercase tracking-[0.16rem] text-[#7d6258]">
+                        {['M','T','W','T','F','S','S'][index]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-[28px] border border-[#ebd5c8] bg-[#fffaf7] p-4">
+                <h3 className="text-xl font-semibold text-[#1b120d]">Low-stock alerts</h3>
+                <ul className="mt-4 space-y-3">
+                  {[
+                    { name: 'Monarch Wool Coat', sku: 'MWC-204', qty: 4 },
+                    { name: 'Summit Zip Hoodie', sku: 'SZH-118', qty: 6 },
+                    { name: 'Lune Utility Shirt', sku: 'LUS-312', qty: 8 },
+                  ].map((item) => (
+                    <li key={item.sku} className="flex items-center justify-between rounded-full bg-[#f5e7df] px-3 py-2 text-sm text-[#382d29]">
+                      <span>
+                        <span className="font-medium">{item.name}</span>
+                        <span className="ml-2 text-[#7d6258]">{item.sku}</span>
+                      </span>
+                      <span className="rounded-full bg-[#fff2e7] px-2 py-1 text-[0.62rem] font-semibold text-[#a76446]">
+                        {item.qty} left
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
+              <div className="rounded-[28px] border border-[#ebd5c8] bg-[#fffaf7] p-4">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-xl font-semibold text-[#1b120d]">Inventory & order management</h3>
+                  <button type="button" className="text-sm font-medium text-[#a76446]">Export</button>
+                </div>
+
+                <div className="overflow-hidden rounded-[20px] border border-[#ebd5c8]">
+                  <table className="min-w-full text-left text-sm">
+                    <thead className="bg-[#f5e7df] text-[#59443d]">
+                      <tr>
+                        <th className="px-3 py-2 font-medium">Product</th>
+                        <th className="px-3 py-2 font-medium">Status</th>
+                        <th className="px-3 py-2 font-medium">Units</th>
+                        <th className="px-3 py-2 font-medium">Orders</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        ['Monarch Wool Coat', 'Processing', '287', '18'],
+                        ['Atelier Knit Sweater', 'Shipped', '112', '9'],
+                        ['Harbor Canvas Tote', 'Delivered', '94', '13'],
+                        ['Lune Utility Shirt', 'Pending', '32', '5'],
+                      ].map(([product, status, units, orders]) => (
+                        <tr key={product} className="border-t border-[#ebd5c8] bg-white/70">
+                          <td className="px-3 py-2 font-medium text-[#1b120d]">{product}</td>
+                          <td className="px-3 py-2">
+                            <span className="rounded-full bg-[#edf7f0] px-2 py-1 text-[0.62rem] font-medium text-[#2d6b47]">
+                              {status}
+                            </span>
+                          </td>
+                          <td className="px-3 py-2">{units}</td>
+                          <td className="px-3 py-2">{orders}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div className="space-y-5">
+                <div className="rounded-[28px] border border-[#ebd5c8] bg-[#fffaf7] p-4">
+                  <h3 className="text-xl font-semibold text-[#1b120d]">Promo builder</h3>
+                  <div className="mt-4 flex gap-2">
+                    <input
+                      aria-label="Promo code name"
+                      defaultValue="SPRING10"
+                      className="w-full rounded-full border border-[#e7d1c3] bg-white px-3 py-2 text-sm text-[#1b120d] outline-none focus:border-[#a76446]"
+                    />
+                    <button type="button" className="rounded-full bg-[#1b120d] px-3 py-2 text-sm font-medium text-white">
+                      Save
+                    </button>
+                  </div>
+                </div>
+
+                <div className="rounded-[28px] border border-[#ebd5c8] bg-[#fffaf7] p-4">
+                  <h3 className="text-xl font-semibold text-[#1b120d]">Abandoned cart</h3>
+                  <ul className="mt-4 space-y-2 text-sm text-[#5d443d]">
+                    <li>• Reminder after 2 hours</li>
+                    <li>• 10% off for cart values over $200</li>
+                    <li>• SMS + email sequence</li>
+                  </ul>
+                </div>
+
+                <div className="rounded-[28px] border border-[#ebd5c8] bg-[#fffaf7] p-4">
+                  <h3 className="text-xl font-semibold text-[#1b120d]">Thermal labels</h3>
+                  <div className="mt-4 rounded-[18px] border border-dashed border-[#d9b8a3] bg-[#f8f1eb] p-3 text-sm text-[#382d29]">
+                    <p className="font-medium">Order #AK-2418</p>
+                    <p className="mt-2">To: Alicia Brooks</p>
+                    <p>Ship by: 02:30 PM</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className="mt-8 grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
           <aside className="glass-panel hidden rounded-[30px] p-5 lg:block">
@@ -1039,6 +1399,7 @@ export default function Home() {
                     alt="Editorial fashion portrait"
                     width={900}
                     height={1000}
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     className="relative z-10 h-[320px] w-full rounded-[22px] object-cover"
                     priority
                   />
@@ -1184,6 +1545,8 @@ export default function Home() {
                           alt={product.name}
                           width={600}
                           height={720}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          loading="lazy"
                           className="h-72 w-full object-cover transition-transform duration-500 hover:scale-[1.02]"
                         />
                         {product.badge && (
