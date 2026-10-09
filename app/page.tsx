@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
   ArrowRight,
   ChevronDown,
@@ -12,6 +13,7 @@ import {
   Sparkles,
   Star,
   Truck,
+  UserRound,
   X,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -1128,6 +1130,15 @@ export default function Home() {
                 <SelectItem value="JPY">JPY</SelectItem>
               </SelectContent>
             </Select>
+
+            <Link
+              href="/login"
+              aria-label="Sign in to your account"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-full px-2 text-sm font-medium text-[#4a3931] transition hover:bg-[#f5e7df] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a76446] sm:px-3"
+            >
+              <UserRound className="h-[18px] w-[18px]" />
+              <span className="hidden sm:inline">Sign in</span>
+            </Link>
 
             <Button variant="ghost" size="icon" aria-label="Search products" onClick={() => setIsSearchOpen(true)}>
               <Search className="h-5 w-5" />
