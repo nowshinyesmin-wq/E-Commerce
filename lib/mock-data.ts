@@ -1,0 +1,221 @@
+export type CurrencyCode = 'USD' | 'EUR' | 'GBP' | 'JPY';
+
+export type ProductReview = {
+  id: string;
+  author: string;
+  rating: number;
+  comment: string;
+  verified: boolean;
+};
+
+export type ProductVariant = {
+  id: string;
+  color: string;
+  size: string;
+  price: number;
+  stock: number;
+  image: string;
+  accent: string;
+};
+
+export type Product = {
+  id: string;
+  slug: string;
+  name: string;
+  category: 'Men' | 'Women' | 'Accessories' | 'Sale';
+  material: string;
+  fit: 'Regular' | 'Slim' | 'Relaxed';
+  price: number;
+  originalPrice?: number;
+  rating: number;
+  image: string;
+  accent: string;
+  badge?: string;
+  variants: ProductVariant[];
+  reviews: ProductReview[];
+  orderHistory: number;
+};
+
+export const currencyRates: Record<CurrencyCode, number> = {
+  USD: 1,
+  EUR: 0.92,
+  GBP: 0.79,
+  JPY: 156,
+};
+
+export const catalog: Product[] = [
+  {
+    id: 'prod-1',
+    slug: 'monarch-wool-coat',
+    name: 'Monarch Wool Coat',
+    category: 'Women',
+    material: 'Wool Blend',
+    fit: 'Relaxed',
+    price: 280,
+    originalPrice: 340,
+    rating: 4.8,
+    image: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80',
+    accent: '#a76446',
+    badge: 'New',
+    variants: [
+      { id: 'v1', color: 'Carbon', size: 'S', price: 280, stock: 7, image: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80', accent: '#3d342f' },
+      { id: 'v2', color: 'Sand', size: 'M', price: 280, stock: 9, image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80', accent: '#d8b79c' },
+      { id: 'v3', color: 'Forest', size: 'L', price: 280, stock: 4, image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=80', accent: '#475a40' },
+    ],
+    reviews: [
+      { id: 'r1', author: 'Alicia', rating: 5, comment: 'Perfect weight for winter layering.', verified: true },
+      { id: 'r2', author: 'Noah', rating: 4, comment: 'Tailoring looks premium and easy to style.', verified: true },
+    ],
+    orderHistory: 184,
+  },
+  {
+    id: 'prod-2',
+    slug: 'atelier-knit-sweater',
+    name: 'Atelier Knit Sweater',
+    category: 'Men',
+    material: 'Cashmere Blend',
+    fit: 'Regular',
+    price: 165,
+    rating: 4.7,
+    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80',
+    accent: '#d9b15b',
+    variants: [
+      { id: 'v4', color: 'Oat', size: 'M', price: 165, stock: 12, image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80', accent: '#d9b15b' },
+      { id: 'v5', color: 'Olive', size: 'L', price: 165, stock: 6, image: 'https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=900&q=80', accent: '#6e7a5b' },
+    ],
+    reviews: [
+      { id: 'r3', author: 'Sam', rating: 5, comment: 'Soft, warm, and surprisingly polished.', verified: true },
+      { id: 'r4', author: 'Lena', rating: 4, comment: 'The fit feels flattering without being tight.', verified: false },
+    ],
+    orderHistory: 126,
+  },
+  {
+    id: 'prod-3',
+    slug: 'lune-utility-shirt',
+    name: 'Lune Utility Shirt',
+    category: 'Women',
+    material: 'Organic Cotton',
+    fit: 'Slim',
+    price: 110,
+    rating: 4.6,
+    image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80',
+    accent: '#8a9b8a',
+    badge: 'Bestseller',
+    variants: [
+      { id: 'v6', color: 'Stone', size: 'S', price: 110, stock: 8, image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80', accent: '#a9b2a3' },
+      { id: 'v7', color: 'Taupe', size: 'M', price: 110, stock: 10, image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=80', accent: '#b59581' },
+    ],
+    reviews: [
+      { id: 'r5', author: 'Priya', rating: 5, comment: 'The cut is lovely and breathable.', verified: true },
+      { id: 'r6', author: 'Marta', rating: 4, comment: 'Still looks crisp after multiple wears.', verified: true },
+    ],
+    orderHistory: 232,
+  },
+  {
+    id: 'prod-4',
+    slug: 'harbor-canvas-bag',
+    name: 'Harbor Canvas Tote',
+    category: 'Accessories',
+    material: 'Waxed Canvas',
+    fit: 'Regular',
+    price: 96,
+    rating: 4.9,
+    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80',
+    accent: '#587a68',
+    variants: [
+      { id: 'v8', color: 'Moss', size: 'One Size', price: 96, stock: 16, image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80', accent: '#587a68' },
+      { id: 'v9', color: 'Clay', size: 'One Size', price: 96, stock: 14, image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=900&q=80', accent: '#b67257' },
+    ],
+    reviews: [
+      { id: 'r7', author: 'Iris', rating: 5, comment: 'Spacious and beautifully structured.', verified: true },
+    ],
+    orderHistory: 310,
+  },
+  {
+    id: 'prod-5',
+    slug: 'summit-zip-hoodie',
+    name: 'Summit Zip Hoodie',
+    category: 'Men',
+    material: 'Cotton French Terry',
+    fit: 'Relaxed',
+    price: 140,
+    rating: 4.5,
+    image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=900&q=80',
+    accent: '#5d6c89',
+    variants: [
+      { id: 'v10', color: 'Slate', size: 'M', price: 140, stock: 5, image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=900&q=80', accent: '#5d6c89' },
+      { id: 'v11', color: 'Cinder', size: 'L', price: 140, stock: 8, image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80', accent: '#4b4d54' },
+    ],
+    reviews: [
+      { id: 'r8', author: 'Leo', rating: 4, comment: 'Heavier than expected but super cozy.', verified: true },
+      { id: 'r9', author: 'Nina', rating: 5, comment: 'Easy layering piece, useful all season.', verified: false },
+    ],
+    orderHistory: 148,
+  },
+  {
+    id: 'prod-6',
+    slug: 'dune-polo',
+    name: 'Dune Polo',
+    category: 'Women',
+    material: 'Pique Cotton',
+    fit: 'Slim',
+    price: 124,
+    originalPrice: 155,
+    rating: 4.7,
+    image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80',
+    accent: '#c88a63',
+    badge: 'Limited',
+    variants: [
+      { id: 'v12', color: 'Dune', size: 'S', price: 124, stock: 9, image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80', accent: '#c88a63' },
+      { id: 'v13', color: 'Ink', size: 'M', price: 124, stock: 7, image: 'https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=900&q=80', accent: '#2d3748' },
+    ],
+    reviews: [
+      { id: 'r10', author: 'Dani', rating: 5, comment: 'The color is flattering and the collar sits perfectly.', verified: true },
+      { id: 'r11', author: 'Chloe', rating: 4, comment: 'Looks polished but still comfortable.', verified: true },
+    ],
+    orderHistory: 182,
+  },
+  {
+    id: 'prod-7',
+    slug: 'ridge-travel-hood',
+    name: 'Ridge Travel Hood',
+    category: 'Accessories',
+    material: 'Ripstop Nylon',
+    fit: 'Regular',
+    price: 88,
+    rating: 4.8,
+    image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80',
+    accent: '#7a8c85',
+    variants: [
+      { id: 'v14', color: 'Ash', size: 'One Size', price: 88, stock: 11, image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80', accent: '#7a8c85' },
+      { id: 'v15', color: 'Sage', size: 'One Size', price: 88, stock: 13, image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=900&q=80', accent: '#7d947b' },
+    ],
+    reviews: [
+      { id: 'r12', author: 'Evan', rating: 5, comment: 'Great color and the hidden pockets are useful.', verified: true },
+    ],
+    orderHistory: 96,
+  },
+  {
+    id: 'prod-8',
+    slug: 'prime-denim-jacket',
+    name: 'Prime Denim Jacket',
+    category: 'Sale',
+    material: 'Premium Denim',
+    fit: 'Relaxed',
+    price: 178,
+    originalPrice: 220,
+    rating: 4.6,
+    image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=900&q=80',
+    accent: '#b06a45',
+    badge: 'Sale',
+    variants: [
+      { id: 'v16', color: 'Indigo', size: 'M', price: 178, stock: 4, image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=900&q=80', accent: '#2d4e7c' },
+      { id: 'v17', color: 'Washed', size: 'L', price: 178, stock: 8, image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=80', accent: '#7d816b' },
+    ],
+    reviews: [
+      { id: 'r13', author: 'Maya', rating: 4, comment: 'Classic shape with modern structure.', verified: true },
+      { id: 'r14', author: 'Tom', rating: 5, comment: 'Feels premium and the denim is sturdy.', verified: true },
+    ],
+    orderHistory: 121,
+  },
+];

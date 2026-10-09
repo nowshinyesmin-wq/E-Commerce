@@ -1,0 +1,66 @@
+@import 'tailwindcss';
+
+:root {
+  --background: #f7f3ef;
+  --background-strong: #efe4dc;
+  --panel: rgba(255, 255, 255, 0.72);
+  --panel-strong: #fffaf6;
+  --foreground: #1b120d;
+  --muted: #6d5b52;
+  --muted-soft: #8d7368;
+  --brand: #a76446;
+  --brand-deep: #7a3d2e;
+  --brand-light: #f2d2c0;
+  --success: #3f7d5b;
+  --warning: #d9b15b;
+  --ring: rgba(167, 100, 70, 0.35);
+  --shadow-soft: 0 20px 45px rgba(51, 31, 25, 0.08);
+}
+
+@theme {
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --color-background: var(--background);
+  --color-panel: var(--panel);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top, rgba(242, 210, 192, 0.28), transparent 35%),
+    var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+select,
+input {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(167, 100, 70, 0.18);
+}
+
+.glass-panel {
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(122, 61, 46, 0.08);
+  box-shadow: var(--shadow-soft);
+}
+
+.text-display {
+  font-family: var(--font-display), serif;
+}
