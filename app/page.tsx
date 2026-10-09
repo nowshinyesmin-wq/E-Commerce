@@ -585,6 +585,13 @@ export default function Home() {
                     )}
                   </div>
 
+                  <div className="flex items-center justify-between rounded-full border border-[#ead7c9] bg-[#fffaf7] px-3 py-2 text-xs uppercase tracking-[0.18rem] text-[#6a5148]">
+                    <span>Selection</span>
+                    <span className="font-semibold tracking-[0.12rem] text-[#1b120d]">
+                      {selectedColor} / {selectedSize}
+                    </span>
+                  </div>
+
                   <div className="rounded-[24px] border border-[#ead7c9] bg-[#fffaf7] p-4">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium text-[#59443d]">Color</p>
