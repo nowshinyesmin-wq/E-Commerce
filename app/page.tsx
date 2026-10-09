@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { catalog, type Product, type ProductVariant } from '@/lib/mock-data';
+import { type Product, type ProductVariant } from '@/lib/mock-data';
 import { cn, formatCurrency } from '@/lib/utils';
 import { useCartStore } from '@/stores/cart-store';
 import { useCurrencyStore } from '@/stores/currency-store';
@@ -113,6 +113,9 @@ function getStockStatus(product: Product) {
 }
 
 export default function Home() {
+  const [catalog, setCatalog] = useState<Product[]>([]);
+  const [isCatalogLoading, setIsCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
   const cartItems = useCartStore((state) => state.items);
   const promoCodes = useCartStore((state) => state.promoCodes);
   const freeShippingThreshold = useCartStore((state) => state.freeShippingThreshold);
@@ -161,6 +164,42 @@ export default function Home() {
   const [weight, setWeight] = useState(68);
   const [fitPreference, setFitPreference] = useState<FitPreference>('Regular');
   const [openQnaIndex, setOpenQnaIndex] = useState<number | null>(0);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadCatalog = async () => {
+      try {
+        const response = await fetch('/api/products', {
+          cache: 'no-store',
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Product API returned HTTP ${response.status}`);
+        }
+
+        const products: Product[] = await response.json();
+        setCatalog(products);
+      } catch (error) {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        console.error('Unable to load the product catalog:', error);
+        setCatalogError(
+          'The PostgreSQL catalog is unavailable. Run npm run db:setup and npm run db:init, then reload.',
+        );
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsCatalogLoading(false);
+        }
+      }
+    };
+
+    void loadCatalog();
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     if (!quickViewProduct) {
@@ -246,7 +285,7 @@ export default function Home() {
       default:
         return [...next].sort((a, b) => b.orderHistory - a.orderHistory);
     }
-  }, [category, color, fit, material, priceRange, search, size, sortBy, stock]);
+  }, [catalog, category, color, fit, material, priceRange, search, size, sortBy, stock]);
 
   const searchResults = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -258,7 +297,7 @@ export default function Home() {
       const searchText = `${product.name} ${product.category} ${product.material} ${product.fit}`.toLowerCase();
       return searchText.includes(query);
     });
-  }, [search]);
+  }, [catalog, search]);
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingProgress = Math.min((subtotal / freeShippingThreshold) * 100, 100);
@@ -383,7 +422,7 @@ export default function Home() {
     }
 
     return catalog.filter((product) => product.id !== quickViewProduct.id).slice(0, 4);
-  }, [quickViewProduct]);
+  }, [catalog, quickViewProduct]);
 
   return (
     <main id="main-content" className="min-h-screen px-4 py-6 text-[#1b120d] md:px-8">
@@ -1524,6 +1563,21 @@ export default function Home() {
               </div>
 
               <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {isCatalogLoading && (
+                  <p className="col-span-full rounded-[22px] bg-white/70 p-5 text-center text-sm text-[#5d443d]" role="status">
+                    Loading the catalog from PostgreSQL…
+                  </p>
+                )}
+                {catalogError && (
+                  <p className="col-span-full rounded-[22px] bg-[#fff2e7] p-5 text-center text-sm text-[#8d4a35]" role="alert">
+                    {catalogError}
+                  </p>
+                )}
+                {!isCatalogLoading && !catalogError && filteredProducts.length === 0 && (
+                  <p className="col-span-full rounded-[22px] bg-white/70 p-5 text-center text-sm text-[#5d443d]">
+                    No styles match the current filters.
+                  </p>
+                )}
                 {filteredProducts.map((product) => {
                   const variant = product.variants[0];
                   const isSaved = savedIds.includes(product.id);

@@ -9,8 +9,10 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev --name phase1_init",
-    "db:seed": "node scripts/seed.js"
+    "prisma:migrate": "prisma migrate dev",
+    "db:seed": "node scripts/seed.js",
+    "db:setup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-local-db.ps1",
+    "db:init": "npm run prisma:generate && npm run prisma:migrate && npm run db:seed"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
